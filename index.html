@@ -300,6 +300,126 @@ figure.ef{margin:0;display:flex;flex-direction:column}
 <script id="saved" type="application/json">{}</script>
 <script>var SAVED=(function(){try{return JSON.parse(document.getElementById("saved").textContent)||{}}catch(e){return{}}})(),KEYS=new Set();
 function LSG(k){KEYS.add(k);var v=null;try{v=localStorage.getItem(k)}catch(e){}if(v==null&&SAVED[k]!=null)v=SAVED[k];return v}</script>
+<style id="anim-css">
+/* ===== Animaciones: con el scroll y automáticas ===== */
+/* barra de avance de lectura */
+.avance{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--ink);transform-origin:0 50%;transform:scaleX(var(--av,0));pointer-events:none}
+/* aparición al bajar */
+.anim .rv{opacity:0;transform:translateY(34px);transition:opacity .9s cubic-bezier(.2,.7,.2,1) var(--d,0s),transform .9s cubic-bezier(.2,.7,.2,1) var(--d,0s)}
+.anim .rv.in{opacity:1;transform:none}
+.anim .rvi{clip-path:inset(0 0 100% 0);transition:clip-path 1.2s cubic-bezier(.7,0,.2,1) var(--d,0s),filter .6s}
+.anim .rvi.in{clip-path:inset(0 0 0 0)}
+/* las fotos toman color cuando pasan por el centro de la pantalla */
+.ph.lit{filter:none}
+/* títulos que se deslizan con el scroll */
+main>section,.feat{overflow-x:clip}
+.drift{translate:var(--dx,0) 0;will-change:translate}
+/* portada con profundidad */
+@media(min-width:701px){
+.hero h1{transform:translateY(calc(-50% + var(--hp,0) * 150px));letter-spacing:calc(-.025em + var(--hp,0) * .08em)}
+.hero .hf{transform:translateX(-50%) translateY(calc(var(--hp,0) * -60px)) scale(calc(1 + var(--hp,0) * .06))}
+.hero .hl,.hero .hr{opacity:calc(1 - var(--hp,0) * 1.6)}
+}
+/* sello giratorio */
+.giro{position:absolute;right:var(--g);top:2.4rem;z-index:4;width:7.5rem;height:7.5rem;display:grid;place-items:center;color:var(--ink);text-decoration:none;border-radius:50%}
+.giro svg{position:absolute;inset:0;width:100%;height:100%;animation:girar 18s linear infinite}
+.giro text{font:600 9.2px/1 Inter,Arial,sans-serif;letter-spacing:.28em;text-transform:uppercase;fill:currentColor}
+.giro b{font-size:1.5rem;line-height:1;animation:flecha 1.8s ease-in-out infinite}
+.giro::before{content:"";position:absolute;inset:26%;border-radius:50%;background:var(--ink);transform:scale(0);transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.giro:hover::before,.giro:focus-visible::before{transform:scale(1)}
+.giro:hover b,.giro:focus-visible b{color:#fff;position:relative}
+.giro b{position:relative}
+.giro:hover svg{animation-duration:6s}
+@keyframes girar{to{transform:rotate(360deg)}}
+@keyframes flecha{0%,100%{transform:translateY(-3px)}50%{transform:translateY(5px)}}
+@media(max-width:700px){.giro{width:5rem;height:5rem;top:1rem}.giro text{font-size:9.6px}.giro b{font-size:1.1rem}}
+/* cinta de conceptos */
+.cinta{background:var(--bg);border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:1.1rem 0;user-select:none}
+.cinta-f{display:flex;width:max-content}
+.cinta-t{display:flex;flex:none;align-items:center;animation:cinta 48s linear infinite}
+.cinta-f.rev .cinta-t{animation-direction:reverse;animation-duration:60s}
+.cinta:hover .cinta-t{animation-play-state:paused}
+.cinta a{flex:none;font-size:clamp(1.5rem,3.6vw,3rem);font-weight:700;letter-spacing:-.03em;text-transform:uppercase;line-height:1.15;color:var(--ink);text-decoration:none;padding:0 .2em;transition:color .25s}
+.cinta .rev a{font-size:clamp(1.1rem,2.4vw,2rem);color:transparent;-webkit-text-stroke:1px var(--ink)}
+.cinta a:hover,.cinta a:focus-visible{color:var(--mut)}
+.cinta .rev a:hover,.cinta .rev a:focus-visible{color:var(--ink)}
+.cinta i{flex:none;width:.5em;height:.5em;margin:0 .45em;background:var(--ink);font-size:clamp(1.1rem,2.4vw,2rem);transform:rotate(45deg);animation:rombo 4s ease-in-out infinite}
+@keyframes cinta{to{transform:translateX(-100%)}}
+@keyframes rombo{0%,100%{transform:rotate(45deg) scale(1)}50%{transform:rotate(225deg) scale(.6)}}
+/* puntos de las pinturas que laten */
+.hp{animation:latido 2.6s ease-out infinite}
+.hp:nth-child(2n){animation-delay:.8s}.hp:nth-child(3n){animation-delay:1.6s}
+@keyframes latido{0%{box-shadow:0 0 0 0 #ffffffcc}70%{box-shadow:0 0 0 16px #fff0}100%{box-shadow:0 0 0 0 #fff0}}
+/* íconos de la tira que giran solos */
+.f4 i{animation:cuadro 6s cubic-bezier(.7,0,.2,1) infinite}
+.f4 a:nth-child(2) i{animation-delay:1.5s}.f4 a:nth-child(3) i{animation-delay:3s}.f4 a:nth-child(4) i{animation-delay:4.5s}
+@keyframes cuadro{0%,55%,100%{transform:none;background:transparent}70%,85%{transform:rotate(45deg) scale(.72);background:var(--ink)}}
+/* sin movimiento si el sistema lo pide */
+@media(prefers-reduced-motion:reduce){
+.anim .rv,.anim .rvi{opacity:1!important;transform:none!important;clip-path:none!important;transition:none!important}
+.giro svg,.giro b,.cinta-t,.cinta i,.hp,.f4 i{animation:none!important}
+.cinta{overflow-x:auto}.drift{translate:none}
+}
+@media print{
+.avance,.giro,.cinta{display:none!important}
+.anim .rv,.anim .rvi{opacity:1!important;transform:none!important;clip-path:none!important}
+.drift{translate:none!important}
+.hero h1,.hero .hf,.hero .hl,.hero .hr{opacity:1!important}
+}
+</style>
+<script id="anim-js">
+document.addEventListener("DOMContentLoaded",function(){
+var quieto=matchMedia("(prefers-reduced-motion: reduce)").matches,R=document.documentElement;
+R.classList.add("anim");
+var $=function(s,r){return(r||document).querySelector(s)},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+/* barra de avance */
+var hd=$("header");if(hd&&!$(".avance",hd)){var av=document.createElement("div");av.className="avance";av.setAttribute("aria-hidden","true");hd.append(av)}
+/* sello giratorio en la portada */
+var hero=$(".hero");
+if(hero&&!$(".giro",hero)){var g=document.createElement("a");g.className="giro";g.href="#guia";g.setAttribute("aria-label","Bajar a la guía de lectura");
+g.innerHTML='<svg viewBox="0 0 100 100" aria-hidden="true"><defs><path id="giro-c" d="M50 50m-38 0a38 38 0 1 1 76 0a38 38 0 1 1-76 0"/></defs><text><textPath href="#giro-c">Bitácora · Teoría · FADU UBA · 2026 ·</textPath></text></svg><b aria-hidden="true">↓</b>';hero.append(g)}
+/* cinta de conceptos que corre sola */
+var band=$(".band");
+if(band&&!$(".cinta")){var A=[["Pragmatismo","#cap7"],["Fenomenología","#mitio"],["Positivismo","#mitio"],["Contaminación","#glosario"],["Superación","#glosario"],["Habitante invisible","#cap7"],["Soporte silencioso","#cap7"],["Inteligencia artificial","#ia"],["Ícaro","#icaro"]],
+B=[["Mapa del habitar","#mas"],["Casos para relacionar","#casos"],["Otros campos","#fuera"],["Los siete capítulos","#casas"],["Las clases","#clases"],["Palabras clave","#glosario"],["Preguntas","#preguntas"],["Conclusiones","#conclusiones"]];
+var fila=function(L,rev){var t=L.map(function(x){return'<a href="'+x[1]+'">'+x[0]+'</a><i aria-hidden="true"></i>'}).join("");
+return'<div class="cinta-f'+(rev?" rev":"")+'"><div class="cinta-t">'+t+'</div><div class="cinta-t" aria-hidden="true">'+t.replace(/<a /g,'<a tabindex="-1" ')+'</div></div>'};
+var c=document.createElement("div");c.className="cinta";c.setAttribute("aria-label","Conceptos de la bitácora");c.innerHTML=fila(A)+fila(B,1);band.after(c)}
+/* elementos que aparecen al bajar */
+var SEL=["main>section .w>h2","main>section .w>.lbl","main>section .w>p",".caso",".flip",".stat",".tl details","#preguntas details",".bi",".f4>a",".k6>*",".scroll",".split",".calc",".mapa",".feat .w>div"].join(",");
+var els=$$(SEL).filter(function(e){return!e.closest("#lb,footer,.tools,.hero")});
+els.forEach(function(e){e.classList.add("rv");var sib=Array.prototype.filter.call(e.parentElement.children,function(x){return x.classList.contains("rv")});e.style.setProperty("--d",Math.min(sib.indexOf(e),6)*.08+"s")});
+var imgs=$$("main img.ph").filter(function(i){return!i.classList.contains("hf")&&!i.closest(".carta,#lb")&&i.id!="mapimg"});
+imgs.forEach(function(i){i.classList.add("rvi")});
+/* números que cuentan */
+var fmt=function(v,d){return v.toLocaleString("es-AR",{minimumFractionDigits:d,maximumFractionDigits:d})};
+function contar(b){if(b.dataset.ct||quieto)return;var s=b.textContent;if(/\//.test(s))return;b.dataset.ct=1;
+var nums=[];s.replace(/\d+(?:,\d+)?/g,function(m){nums.push(m)});if(!nums.length)return;var t0=null;
+function paso(t){if(!t0)t0=t;var k=Math.min(1,(t-t0)/1400),e=1-Math.pow(1-k,3),i=0;
+b.textContent=s.replace(/\d+(?:,\d+)?/g,function(m){var d=(m.split(",")[1]||"").length,v=parseFloat(m.replace(",","."));i++;return fmt(v*e,d)});
+if(k<1)requestAnimationFrame(paso);else b.textContent=s}requestAnimationFrame(paso)}
+if("IntersectionObserver"in window){
+/* las fotos recortadas no se pueden observar directamente: se observa su contenedor */
+var tgt=function(e){return[e].concat(e.__ph||[])};
+imgs.forEach(function(i){var p=i.parentElement;(p.__ph=p.__ph||[]).push(i)});
+var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){tgt(x.target).forEach(function(e){e.classList.add("in")});if(x.target.classList.contains("stat")){var b=$("b",x.target);if(b)contar(b)}io.unobserve(x.target)}})},{rootMargin:"0px 0px -8% 0px",threshold:.12});
+var obs=els.slice();imgs.forEach(function(i){if(obs.indexOf(i.parentElement)<0)obs.push(i.parentElement)});
+obs.forEach(function(e){io.observe(e)});
+var lit=new IntersectionObserver(function(en){en.forEach(function(x){x.target.__ph.forEach(function(i){i.classList.toggle("lit",x.isIntersecting)})})},{rootMargin:"-38% 0px -38% 0px"});
+imgs.forEach(function(i){var p=i.parentElement;if(!p.__lo){p.__lo=1;lit.observe(p)}});
+}else els.concat(imgs).forEach(function(e){e.classList.add("in")});
+/* movimiento ligado al scroll */
+var tit=$$("main>section .w>h2,.feat h2");tit.forEach(function(h){h.classList.add("drift")});
+var pend=false;
+function mover(){pend=false;var y=scrollY,vh=innerHeight,doc=R.scrollHeight-vh;
+R.style.setProperty("--av",doc>0?Math.min(1,y/doc):0);
+if(quieto)return;
+if(hero){var hh=hero.offsetHeight||1;hero.style.setProperty("--hp",Math.min(1,Math.max(0,y/hh)).toFixed(4))}
+var w=innerWidth;tit.forEach(function(h){var r=h.getBoundingClientRect();if(r.bottom<-50||r.top>vh+50)return;var t=(vh-r.top)/(vh+r.height);t=Math.min(1,Math.max(0,t));h.style.setProperty("--dx",((.5-t)*w*.07).toFixed(1)+"px")})}
+function pedir(){if(!pend){pend=true;requestAnimationFrame(mover)}}
+addEventListener("scroll",pedir,{passive:true});addEventListener("resize",pedir);mover();
+});
+</script>
 </head>
 <body>
 <div class="top"><div class="w"><p class="lbl">FADU UBA · Teoría de la Arquitectura · Cát. Dominguez / Giménez / Valentino · 2026</p><p class="lbl">Sofía Zakin</p></div></div>
